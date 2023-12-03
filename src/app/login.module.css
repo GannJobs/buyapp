@@ -1,0 +1,109 @@
+.mainContent{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    height: 100vh;
+    background-color: var(--bg);
+}
+
+.titulo {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+}
+
+.titulo h1 {
+    font-size: 40px;
+    font-weight: bolder;
+}
+
+.titulo p {
+    color: var(--cor1);
+}
+
+.login{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+}
+
+.login form label .togglePassword {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: none;
+    border: none;
+}
+
+.login form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    border: 1px solid #fff2;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    width: 100%;
+    padding: 1em;
+    gap: 0.5em;
+}
+
+.login form label {
+    display: flex;
+    background: none;
+    align-items: center;
+    justify-content: start;
+    padding: 0.5em;
+    padding-left: 1em;
+    gap: 1em;
+}
+
+.login form label input {
+    background: none;
+    border: none;
+    font-size: 14px;
+    padding: 8px;
+    width: 100%;
+}
+
+.login form button {
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 16px;
+    width: 50%;
+    background-color: var(--bg);
+    border: none;
+    color: white;
+}
+
+.ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color:var(--cor1);
+    gap: 1em;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.caixa {
+    border-radius: 3px;
+    background-color: rgb(67, 67, 67);
+    border-color: rgb(187, 186, 186);
+    width: 100%;
+    height: max-content;
+}
+
+.togglePassword {
+    background-color: black;
+}

@@ -1,95 +1,124 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client"
+
+import React from "react"
+import { useState } from "react";
+import { api } from "@/app/global";
+import axios from "axios"
+import { BsFillEnvelopeFill } from "react-icons/bs"
+import { BiSolidLockAlt } from "react-icons/bi"
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai"
+import { useRouter } from 'next/navigation'
+import { toast } from "react-hot-toast"
+import { AiOutlineArrowLeft } from "react-icons/ai"
+import Link from "next/link";
+import styles from "./login.module.css"
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    const router = useRouter()
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+    const [isPasswordShown, setIsPasswordShown] = React.useState(false)
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+    function togglePasswordVisiblity() {
+        setIsPasswordShown(!isPasswordShown)
+    }
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
+    const irParaOutraPaginaComToken = async () => {
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+        try {
+            // Substitua 'seu_token_aqui' pelo token real
+            const token = localStorage.getItem('token');
+
+            // Configure o header 'Authorization' com o token
+            const config = {
+                headers: {
+                    Authorization: `Token ${token}`,
+                },
+            };
+
+            // Faça uma solicitação HTTP com o token no header
+            const response = await axios.get('/inicial', config);
+            router.push("/inicial")
+            // Se a solicitação for bem-sucedida, navegue para a outra página
+            if (response.status === 200) {
+                router.push("/inicial")
+            }
+        } catch (error) {
+            console.error('Erro ao fazer a solicitação com token:', error);
+        }
+    }
+
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post(api + 'login', {
+                username: username,
+                password: password,
+            });
+
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                toast.success("Login efetuado com sucesso!");
+                irParaOutraPaginaComToken();
+            }
+        } catch (error) {
+            console.error('Erro durante a autenticação:', error);
+            toast.error("Email ou senha incorretos!");
+        }
+    };
+
+    return (
+        <main className={styles.mainContent}>
+            <div className={styles.login}>
+                <div className={styles.titulo}>
+                    <h1>BuyApp</h1>
+                    <p>Buscando soluções para seu dia a dia</p>
+                </div>
+                <form onSubmit={handleLogin}>
+                    <label htmlFor="username" className={styles.caixa}>
+                        <div>
+                            <BsFillEnvelopeFill size={20} />
+                        </div>
+                        <input type="text" name="username" id="username" placeholder="Usuário" onChange={(e) => setUsername(e.target.value)} />
+                    </label>
+                    <label htmlFor="password" className={styles.caixa}>
+                        <div>
+                            <BiSolidLockAlt size={20} />
+                        </div>
+                        <input
+                            type={isPasswordShown ? "text" : "password"}
+                            name="password"
+                            id="password"
+                            placeholder="Senha" onChange={(e) => setPassword(e.target.value)}
+                        />
+                        {isPasswordShown ? (
+                            <button
+                                onClick={togglePasswordVisiblity}
+                                className={styles.togglePassword}
+                                type="button"
+                            >
+                                <AiFillEyeInvisible size={20} color='black' />
+                            </button>
+                        ) : (
+                            <button
+                                onClick={togglePasswordVisiblity}
+                                className={styles.togglePassword}
+                                type="button"
+                            >
+                                <AiFillEye size={20} color='black'/>
+                            </button>
+                        )}
+                    </label>
+                    <button id="login">Entrar</button>
+                    <div className={styles.ajuda}>
+                        <a href="">Redefinir Senha</a>
+                        <a href="">Precisa de Ajuda?</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    )
 }
