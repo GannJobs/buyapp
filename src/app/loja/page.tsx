@@ -13,15 +13,30 @@ import Image from "next/image";
 
 export default function Home() {
 
-    const [Lojas, SetLojas] = useState([
-        {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        // Função para obter o índice da URL
+        const obterIndiceDaURL = () => {
+            const parametros = new URLSearchParams(window.location.search);
+            const indiceString = parametros.get('indice');
+
+            return indiceString !== null ? parseInt(indiceString) || 0 : 0;
+        }
+
+        // Configurar o índice no estado
+        setCurrentIndex(obterIndiceDaURL());
+    }, []);
+
+    const [Lojas, SetLojas] = useState(
+        [{
             Nome: "",
             CEP: "",
             ContactNumber: "",
             Descricao: "",
             img: ""
-        }
-    ])
+        }]
+    )
 
     const [user, setUser] = useState({
         first_name: ""
@@ -30,9 +45,11 @@ export default function Home() {
     const [categoria, setCategoria] = useState(
         [
             {
+                id: "",
                 Nome: "",
                 Descricao: "",
                 produto: [{
+                    id: "",
                     Nome: "",
                     Valor: "",
                     Marca: "",
@@ -42,73 +59,73 @@ export default function Home() {
         ]
     )
 
-    const loja = async (e: any) => {
-        e.preventDefault();
+    useEffect(() => {
+        const fetchLoja = async () => {
+            try {
+                const response = await axios.get(api + 'loj/loja/', {
+                    headers: config().headers,
+                });
+                console.log(response.data)
 
-        try {
-            const response = await axios.get(api + 'Loja/',
-                {
-                    headers: config().headers
-                })
+                if (response.data.status === 302) {
+                    SetLojas([response.data.Loja]);
+                }
 
-            if (response.data.status === 302) {
-                SetLojas(response.data);
+            } catch (error) {
+                console.error('Erro durante a autenticação:', error);
             }
+            console.log(Lojas)
+        };
 
-        } catch (error) {
-            console.error('Erro durante a autenticação:', error);
-            toast.error("Erro no Servidor");
-        }
-    }
+        // Chama a função automaticamente ao montar o componente
+        fetchLoja();
+    }, []);
 
-    loja
+    useEffect(() => {
+        const fetchMe = async () => {
+            try {
+                const response = await axios.get(api + 'usr/user/me/', {
+                    headers: config().headers,
+                });
 
-    const usr = async (e: any) => {
-        e.preventDefault();
+                if (response.data.status === 302) {
+                    setUser(response.data.Pessoa.Pessoa);
+                }
 
-        try {
-            const response = await axios.get(api + 'User/me/',
-                {
-                    headers: config().headers
-                })
-
-            if (response.data.status === 302) {
-                setUser(response.data);
+            } catch (error) {
+                console.error('Erro durante a autenticação:', error);
             }
+        };
 
-        } catch (error) {
-            console.error('Erro durante a autenticação:', error);
-            toast.error("Erro no Servidor");
-        }
-    }
+        // Chama a função automaticamente ao montar o componente
+        fetchMe();
+    }, []);
 
-    usr
+    useEffect(() => {
+        const fetchCat = async () => {
+            try {
+                const response = await axios.get(api + 'cat/Catg/', {
+                    headers: config().headers,
+                });
 
-    const Cat = async (e: any) => {
-        e.preventDefault();
+                if (response.data.status === 302) {
+                    setCategoria(response.data);
+                }
 
-        try {
-            const response = await axios.get(api + 'Cat/',
-                {
-                    headers: config().headers
-                })
-
-            if (response.data.status === 302) {
-                setCategoria(response.data);
+            } catch (error) {
+                console.error('Erro durante a autenticação:', error);
             }
+        };
 
-        } catch (error) {
-            console.error('Erro durante a autenticação:', error);
-            toast.error("Erro no Servidor");
-        }
-    }
-
-    Cat
+        // Chama a função automaticamente ao montar o componente
+        fetchCat();
+    }, []);
 
     const renderCategoria = (categoria: any) => {
         return (
           <div key={categoria.Nome} className={styles.categoria}>
             <h3>{categoria.Nome}</h3>
+            <p>Descrição: {categoria.Descricao}</p>
             <button>Adicionar produto</button>
             {categoria.produto.map((produto: any) => (
               <div key={produto.Nome} className={styles.produto}>
@@ -121,6 +138,7 @@ export default function Home() {
                 <p>{produto.Nome}</p>
                 <p>Valor: {produto.Valor}</p>
                 <p>Marca: {produto.Marca}</p>
+                <button>Delete</button>
               </div>
             ))}
           </div>
@@ -145,9 +163,9 @@ export default function Home() {
                             src={Lojas[0].img}
                             alt='Imagem da Loja'
                             width={400}
-                            height={100} />
+                            height={200} />
                         <div className={styles.dados}>
-                            <h2>{Lojas[0].Nome}NOME</h2>
+                            <h2>{Lojas[0].Nome}</h2>
                             <p>Contato: {Lojas[0].ContactNumber}</p>
                             <p>Local: {Lojas[0].CEP}</p>
                             <p>Descrição:</p>
@@ -159,7 +177,7 @@ export default function Home() {
                             <h2>Categorias</h2>
                             <button>Adicionar Categoria</button>
                         </div>
-                        {categoria.map(renderCategoria)}
+                        {Array.isArray(categoria) && categoria.map(renderCategoria)}
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ export function config(){
 
   const config = {
     headers: {
-      Authorization: `Token ${token}`, // Replace 'token' with your actual token value
+      Authorization: `token ${token}`, // Replace 'token' with your actual token value
       'Content-Type': 'application/json', // Set the content type to JSON
     },
   };
@@ -23,7 +23,7 @@ export function apiGET(url: string) {
 
     return axios.get(url, {
         headers: {
-            Authorization: `Token ${token}`,
+            Authorization: `token ${token}`,
         },
     });
 }
@@ -36,7 +36,7 @@ export function apiPOST(url: string) {
 
   return axios.post(url, null, {
       headers: {
-          Authorization: `Token ${token}`,
+          Authorization: `token ${token}`,
       },
   });
 }
@@ -51,7 +51,7 @@ export function apiUpdate(url: string, dataToUpdate: any) {
     return axios.patch(url, {...dataToUpdate}, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
+        Authorization: `token ${token}`,
       },
     });
   }
