@@ -40,7 +40,6 @@ export default function Home() {
 
             // Faça uma solicitação HTTP com o token no header
             const response = await axios.get('/inicial', config);
-            router.push("/inicial")
             // Se a solicitação for bem-sucedida, navegue para a outra página
             if (response.status === 200) {
                 router.push("/inicial")

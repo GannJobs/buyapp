@@ -2,16 +2,24 @@
 
 import React, { useEffect } from "react"
 import { api } from "../global"
+import { useRouter } from 'next/navigation'
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { config } from "../(hooks)/api";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import styles from "./inicial.module.css"
+import styles from "./inicial.module.css";
 import { FaRegUserCircle } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 export default function Home() {
+    const router = useRouter()
+
+    const handleGoBack = () => {
+        router.back()
+    };
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -20,16 +28,21 @@ export default function Home() {
         const obterIndiceDaURL = () => {
             const parametros = new URLSearchParams(window.location.search);
             const indiceString = parametros.get('indice');
-
             return indiceString !== null ? parseInt(indiceString) || 0 : 0;
         }
-
-        // Configurar o índice no estado
-        setCurrentIndex(obterIndiceDaURL());
+    
+        // Atualizar o estado e obter o valor atualizado imediatamente
+        const novoIndice = obterIndiceDaURL();
+        setCurrentIndex((prevIndex) => {
+            // Lógica adicional com o valor atualizado
+            console.log("Índice da URL atualizado:", novoIndice);
+            return novoIndice;
+        });
     }, []);
 
     const [Lojas, SetLojas] = useState(
         [{
+            id: "",
             Nome: "",
             CEP: "",
             ContactNumber: "",
@@ -42,22 +55,59 @@ export default function Home() {
         first_name: ""
     })
 
-    const [categoria, setCategoria] = useState(
-        [
-            {
-                id: "",
-                Nome: "",
-                Descricao: "",
-                produto: [{
+    const [categoria, setCategoria] = useState([
+        {
+            id: "",
+            nome: "",
+            descricao: "",
+            produtos: [
+                {
                     id: "",
                     Nome: "",
                     Valor: "",
                     Marca: "",
-                    img: ""
-                },]
-            }
-        ]
-    )
+                    img: "",
+                },
+            ],
+        },
+    ]);
+
+    function goCat(lojaId: any) {
+        router.push(`/loja/create/Categoria?LojaId=${lojaId}`)
+    }
+
+    function goProd(categoriaId: any) {
+        router.push(`/loja/create/Produto?categoriaId=${categoriaId}`);
+    }
+
+    const renderCategoria = (categoria: any) => {
+        return (
+            <div key={categoria.nome} className={styles.categoria} style={{ width: '100%' }}>
+                <h2>{categoria.nome}</h2>
+                <p>Descrição: {categoria.descricao}</p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <button onClick={() => goProd(categoria.id)}>Adicionar produto</button>
+                    <FaRegTrashAlt size={30} className={styles.exc} onClick={() => excluirC(categoria.id)} />
+                </div>
+                {categoria.produtos.map((produto: any) => (
+                    <div className={styles.produto} key={produto.Nome}>
+                        <Image
+                            src={produto.img}
+                            alt={`Imagem de ${produto.Nome}`}
+                            width={100}
+                            height={100}
+                        />
+                        <div>
+                            <p>{produto.Nome}</p>
+                            <p>Valor R${produto.Valor}</p>
+                            <p>Marca: {produto.Marca}</p>
+                        </div>
+                        <FaRegTrashAlt size={30} className={styles.exc} onClick={() => excluirP(produto.id)} />
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
     useEffect(() => {
         const fetchLoja = async () => {
@@ -65,7 +115,6 @@ export default function Home() {
                 const response = await axios.get(api + 'loj/loja/', {
                     headers: config().headers,
                 });
-                console.log(response.data)
 
                 if (response.data.status === 302) {
                     SetLojas([response.data.Loja]);
@@ -74,7 +123,6 @@ export default function Home() {
             } catch (error) {
                 console.error('Erro durante a autenticação:', error);
             }
-            console.log(Lojas)
         };
 
         // Chama a função automaticamente ao montar o componente
@@ -108,9 +156,10 @@ export default function Home() {
                     headers: config().headers,
                 });
 
-                if (response.data.status === 302) {
-                    setCategoria(response.data);
+                if (response.data.status === 200) {
+                    setCategoria(response.data.Categorias);
                 }
+                console.log(response.data)
 
             } catch (error) {
                 console.error('Erro durante a autenticação:', error);
@@ -121,33 +170,42 @@ export default function Home() {
         fetchCat();
     }, []);
 
-    const renderCategoria = (categoria: any) => {
-        return (
-          <div key={categoria.Nome} className={styles.categoria}>
-            <h3>{categoria.Nome}</h3>
-            <p>Descrição: {categoria.Descricao}</p>
-            <button>Adicionar produto</button>
-            {categoria.produto.map((produto: any) => (
-              <div key={produto.Nome} className={styles.produto}>
-                <Image
-                  src={produto.img}
-                  alt={`Imagem de ${produto.Nome}`}
-                  width={100}
-                  height={50}
-                />
-                <p>{produto.Nome}</p>
-                <p>Valor: {produto.Valor}</p>
-                <p>Marca: {produto.Marca}</p>
-                <button>Delete</button>
-              </div>
-            ))}
-          </div>
-        );
-      };
+    const excluirP = async (id: any) => {
+        try {
+            const response = await axios.delete(`${api}pd/prod/`, {
+                headers: config().headers,
+                params: { id: id },
+            });
+
+            if (response.data.status == 200) {
+                window.location.reload();
+            }
+
+        } catch (error) {
+            console.error('Erro durante a exclusão do produto:', error);
+        }
+    };
+
+    const excluirC = async (id: any) => {
+        try {
+            const response = await axios.delete(`${api}cat/Catg/`, {
+                headers: config().headers,
+                params: { id: id },
+            });
+
+            if (response.data.status === 200) {
+                window.location.reload();
+            }
+
+        } catch (error) {
+            console.error('Erro durante a exclusão do produto:', error);
+        }
+    };
 
     return (
         <main>
             <div className={styles.mainContent}>
+                <button className={styles.back} onClick={handleGoBack}>Voltar</button>
                 <div className={styles.superior}>
                     <Link href='/inicial'>
                         <h1>BuyApp</h1>
@@ -175,7 +233,7 @@ export default function Home() {
                     <div className={styles.categoria}>
                         <div className={styles.categoria3}>
                             <h2>Categorias</h2>
-                            <button>Adicionar Categoria</button>
+                            <button onClick={() => goCat(currentIndex)}>Adicionar Categoria</button>
                         </div>
                         {Array.isArray(categoria) && categoria.map(renderCategoria)}
                     </div>

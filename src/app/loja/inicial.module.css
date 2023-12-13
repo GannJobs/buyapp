@@ -82,7 +82,7 @@
 }
 
 .categoria {
-    width: 100%;
+    width: 60%;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -137,4 +137,50 @@
     padding: 10px;
     background-color: white;
     cursor: pointer;
+}
+
+.categoria button:hover {
+    color: white;
+    background-color: black;
+    transition: 0.5s;
+}
+
+.produto {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 3em;
+    background-color: white;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 20px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.exc {
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.exc:hover {
+    transition: 0.5s;
+    color: red;
+}
+
+.back {
+    position: absolute;
+    padding: 15px;
+    top: 0;
+    left: 0;
+    margin: 20px;
+    border: none;
+    border-radius: 2px;
+    transition: 0.5s;
+}
+
+.back:hover {
+    color: white;
+    background-color: black;
+    transition: 0.5s;
 }

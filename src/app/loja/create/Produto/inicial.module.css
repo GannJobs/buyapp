@@ -8,27 +8,70 @@
     margin-left: 40px;
 }
 
-.superior {
-    display: flex;
-    top: 0;
-    margin-top: 5px;
+.back {
     position: absolute;
-    flex-direction: row;
-    gap: 22em;
-    align-items: center;
-    justify-content: center;
-    color: white;
+    padding: 15px;
+    top: 0;
+    left: 0;
+    margin: 20px;
+    border: none;
+    border-radius: 2px;
+    transition: 0.5s;
 }
 
-.superior div {
+.back:hover {
+    color: white;
+    background-color: black;
+    transition: 0.5s;
+}
+
+.form {
     display: flex;
-    flex-direction: row;
     align-items: center;
+    flex-direction: column;
     justify-content: center;
+    color: rgb(0, 0, 0);
+    border: 1px solid #fff2;
+    border-radius: 5px;
+    padding: 1em;
+    background-color: white;
     gap: 1em;
-}
+  }
 
-.superior a {
-    text-decoration: none;
+  .form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;  
+    align-items: center;
+  }
+  
+  .form label {
+    width: 100%;
+    display: flex;
+    background: none;
+    align-items: center;
+    justify-content: start;
+    padding: 0.5em;
+    padding-left: 1em;
+    gap: 1em;
+  }
+  
+  .form label input {
+    background: none;
+    border: none;
+    font-size: 14px;
+    padding: 8px;
+    width: 100%;
+  }
+  
+  .form button {
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 16px;
+    text-align: center;
+    width: 50%;
+    background-color: rgb(108, 191, 108); /* Certifique-se de ter a variável --bg definida */
+    border: none;
     color: white;
-}
+  }
+  
